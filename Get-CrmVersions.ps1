@@ -1,6 +1,6 @@
 param
 (
-	$login = "admin@domain.com",
+    $login = "admin@domain.com",
     $password = "LeMotDePasse",
     $region = "EMEA", # NorthAmerica, EMEA, APAC, SouthAmerica, Oceania, JPN, CAN, IND, and NorthAmerica2
     $authType = "Office365", # AD, IDF, oAuth, Office365,
@@ -110,7 +110,7 @@ foreach($crmOrganization in $crmOrganizations)
     $solutions = $crmClient.RetrieveMultiple($querySolutions);
     Write-Host "[OK]" -ForegroundColor Green;
     
-    # Retrieving CRM build version (thanks Rémi Boigey)
+    # Retrieving CRM build version (thanks RÃ©mi Boigey)
     Write-Host "`t> Retrieving version..." -NoNewline -ForegroundColor Gray;
     $versionResponse = Invoke-WebRequest "$($crmOrganization.WebApplicationUrl)/nga/version.txt" -Method Get;
     $buildVersion = $versionResponse.Content;
@@ -151,15 +151,7 @@ foreach($solution in $selectedSolutions)
 {
     foreach($header in $headers)
     {
-        $value = "";
-        try
-        {
-            $value = $solution.$header;
-        }
-        catch
-        {
-        
-        }
+        $value = $solution.$header;
         $outputCsv.Append([string]::Concat($value, $csvSeparator)) | Out-Null;
     }
     $outputCsv.AppendLine("") | Out-Null;
