@@ -64,8 +64,33 @@ Write-Host "[OK]" -ForegroundColor Green;
 Write-Host "Discovering organizations..." -NoNewline -ForegroundColor Gray;
 $securePassword = ConvertTo-SecureString -String $password -AsPlainText -Force;
 $credentials = New-Object System.Management.Automation.PSCredential($login, $securePassword);
-$crmOrganizations = Get-CrmOrganizations -OnLineType Office365 -DeploymentRegion $region -Credential $credentials;
+$instances = Get-CrmOrganizations -OnLineType Office365 -DeploymentRegion $region -Credential $credentials;
 Write-Host "[OK]" -ForegroundColor Green;
+
+# Prepare organizations for display
+$allInstances = @();
+$current = 0;
+$total = $instances.Count;
+foreach($instance in $instances)
+{    
+    $current++;
+    $percent = ($current/$total)*100;
+	Write-Progress -Activity "Pulling instances data" -Status "[$current/$total] Processing instance '$($instance.FriendlyName)'" -PercentComplete $percent;
+
+    # Retrieving CRM build version (thanks Remi Boigey)
+    $versionResponse = Invoke-WebRequest "$($instance.WebApplicationUrl)/nga/version.txt" -Method Get;
+    $buildVersion = $versionResponse.Content;
+
+    # Build instance object with required properties
+    $instanceObject = $instance | Select-Object -Property UniqueName, FriendlyName, Version
+    $instanceObject | Add-Member -MemberType NoteProperty -Name BuildVersion -Value $buildVersion;
+    $instanceObject | Add-Member -MemberType NoteProperty -Name Url -Value $instance.WebApplicationUrl;
+
+    $allInstances += $instanceObject;
+}
+
+# Select organizations
+$selectedInstances = $allInstances | Out-GridView -OutputMode Multiple;
 
 # Prepare query for solutions
 $querySolutions = New-Object "Microsoft.Xrm.Sdk.Query.QueryExpression" -ArgumentList "solution";
@@ -82,18 +107,18 @@ $querySolutions.Orders.Add($order);
 
 $allSolutions = @();
 $current = 0;
-$total = $crmOrganizations.Count;
-foreach($crmOrganization in $crmOrganizations)
+$total = $selectedInstances.Count;
+foreach($instance in $selectedInstances)
 {
     $current++;
     $percent = ($current/$total)*100;
-	Write-Progress -Activity "Pulling solution data" -Status "[$current/$total] Processing instance '$($crmOrganization.FriendlyName)'" -PercentComplete $percent;
+	Write-Progress -Activity "Pulling solution data" -Status "[$current/$total] Processing instance '$($instance.FriendlyName)'" -PercentComplete $percent;
 
     # Connecting to CRM instance with connection string
     Write-Host "Connecting to " -NoNewline -ForegroundColor Gray;
-    Write-Host $crmOrganization.FriendlyName -NoNewline -ForegroundColor Yellow;
+    Write-Host $instance.FriendlyName -NoNewline -ForegroundColor Yellow;
     Write-Host " instance..." -NoNewline -ForegroundColor Gray;
-	$crmConnectionString = "AuthType=$authType;Username=$login;Password=$password;Url=$($crmOrganization.WebApplicationUrl);RequireNewInstance=true;";
+	$crmConnectionString = "AuthType=$authType;Username=$login;Password=$password;Url=$($instance.Url);RequireNewInstance=true;";
     try
     {
         $crmClient = Get-CrmConnection -ConnectionString $crmConnectionString;
@@ -110,23 +135,16 @@ foreach($crmOrganization in $crmOrganizations)
     $solutions = $crmClient.RetrieveMultiple($querySolutions);
     Write-Host "[OK]" -ForegroundColor Green;
     
-    # Retrieving CRM build version (thanks Rémi Boigey)
-    Write-Host "`t> Retrieving version..." -NoNewline -ForegroundColor Gray;
-    $versionResponse = Invoke-WebRequest "$($crmOrganization.WebApplicationUrl)/nga/version.txt" -Method Get;
-    $buildVersion = $versionResponse.Content;
-    Write-Host "[OK]" -ForegroundColor Green;
-    
     # Loading data into custom object collection for final rendering
     Write-Host "`t> Processing data..." -NoNewline -ForegroundColor Gray;
     foreach($solution in $solutions.Entities)
     {
          $solutionObject = New-Object -TypeName psobject;
-         $solutionObject | Add-Member -MemberType NoteProperty -Name Instance -Value $crmOrganization.FriendlyName;
-         $solutionObject | Add-Member -MemberType NoteProperty -Name InstanceBuild -Value $buildVersion;
-         $solutionObject | Add-Member -MemberType NoteProperty -Name InstanceDBVersion -Value $crmOrganization.Version;
-         foreach($attribute in $solution.Attributes)
+         $solutionObject | Add-Member -MemberType NoteProperty -Name Instance -Value $instance.FriendlyName;
+         # Add solution attributes ordered like expected
+         foreach($column in $querySolutions.ColumnSet.Columns)
          {
-            $solutionObject | Add-Member -MemberType NoteProperty -Name $attribute.Key -Value $attribute.Value;
+            $solutionObject | Add-Member -MemberType NoteProperty -Name $column -Value $solution[$column];
          }
          $allSolutions  += $solutionObject;
     }
@@ -147,11 +165,11 @@ foreach($header in $headers)
     $outputCsv.Append($header + $csvSeparator) | Out-Null;
 }
 $outputCsv.AppendLine("") | Out-Null;
-foreach($solution in $selectedSolutions)
+foreach($solutionItem in $selectedSolutions)
 {
     foreach($header in $headers)
     {
-        $value = $solution.$header;
+        $value = $solutionItem.$header;
         $outputCsv.Append([string]::Concat($value, $csvSeparator)) | Out-Null;
     }
     $outputCsv.AppendLine("") | Out-Null;
