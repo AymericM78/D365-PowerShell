@@ -29,7 +29,7 @@ Provision-Folder -folderPath $samplesPath;
 
 # Parameters
 $nugetUrl = "https://www.nuget.org/api/v2/package";
-$defaultFrameworkFolder = "net452";
+$defaultFrameworkFolder = "net462";
 
 $packages = @();
 # https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/org-service/subscribe-sdk-assembly-updates-using-nuget#BKMK_GetNuGetPackages
