@@ -7,7 +7,7 @@ $zipPackagePath = "$packagePath\$nugetPackage.zip";
 
 # Get package registration details
 $url = "https://api.nuget.org/v3/registration3/$($nugetPackage.ToLower())/index.json";
-$response = Invoke-WebRequest $url;
+$response = Invoke-WebRequest $url -UseBasicParsing;
 $packageMetadata =  $response.Content | ConvertFrom-Json;
 $latestVersion = $packageMetadata.items.upper;
 
@@ -30,7 +30,7 @@ else
 
     # Download package to D365.DevOps.Powershell folder
     Write-Host "Downloading D365.DevOps.Powershell package from $nugetUrl..." -NoNewline -ForegroundColor Gray;
-    Invoke-WebRequest "$nugetUrl/$nugetPackage" -OutFile $zipPackagePath;
+    Invoke-WebRequest "$nugetUrl/$nugetPackage" -OutFile $zipPackagePath -UseBasicParsing;
     Expand-Archive -Path $zipPackagePath -DestinationPath $packagePath -Force;
     Remove-Item -Path $zipPackagePath -Force;
     Write-Host "[OK]" -ForegroundColor Green;
