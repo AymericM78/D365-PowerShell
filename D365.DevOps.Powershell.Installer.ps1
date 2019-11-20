@@ -30,7 +30,7 @@ else
 
     # Download package to D365.DevOps.Powershell folder
     Write-Host "Downloading D365.DevOps.Powershell package from $nugetUrl..." -NoNewline -ForegroundColor Gray;
-    Invoke-WebRequest "$nugetUrl/$nugetPackage" -OutFile $zipPackagePath -UseBasicParsing;
+    Invoke-WebRequest "$nugetUrl/$nugetPackage/$latestVersion" -OutFile $zipPackagePath -UseBasicParsing;
     Expand-Archive -Path $zipPackagePath -DestinationPath $packagePath -Force;
     Remove-Item -Path $zipPackagePath -Force;
     Write-Host "[OK]" -ForegroundColor Green;
