@@ -1,3 +1,4 @@
+Clear-Host; 
 # Parameters
 $nugetPackage = "D365.DevOps.Powershell";
 $nugetUrl = "https://www.nuget.org/api/v2/package";
@@ -10,6 +11,11 @@ $url = "https://api.nuget.org/v3/registration3/$($nugetPackage.ToLower())/index.
 $response = Invoke-WebRequest $url -UseBasicParsing;
 $packageMetadata =  $response.Content | ConvertFrom-Json;
 $latestVersion = $packageMetadata.items.upper;
+Write-Host "D365.DevOps.Powershell latest version = $latestVersion" -ForegroundColor Yellow;
+
+$forceVersion = "2020.2.311";
+Write-Host "D365.DevOps.Powershell force version = $forceVersion" -ForegroundColor Yellow;
+$latestVersion = $forceVersion;
 
 $packagePath = "$packagePath\$latestVersion";
 
