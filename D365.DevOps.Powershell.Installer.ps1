@@ -13,7 +13,7 @@ $packageMetadata =  $response.Content | ConvertFrom-Json;
 $latestVersion = $packageMetadata.items.upper;
 Write-Host "D365.DevOps.Powershell latest version = $latestVersion" -ForegroundColor Yellow;
 
-$forceVersion = "2020.2.311";
+$forceVersion = "2020.2.2112";
 Write-Host "D365.DevOps.Powershell force version = $forceVersion" -ForegroundColor Yellow;
 $latestVersion = $forceVersion;
 
