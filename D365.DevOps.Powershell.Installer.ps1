@@ -1,4 +1,7 @@
 Clear-Host; 
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bOR [Net.SecurityProtocolType]::Tls12
+
 # Parameters
 $nugetPackage = "D365.DevOps.Powershell";
 $nugetUrl = "https://www.nuget.org/api/v2/package";
