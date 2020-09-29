@@ -41,7 +41,10 @@ else
     Write-Host "Downloading D365.DevOps.Powershell package from $nugetUrl..." -NoNewline -ForegroundColor Gray;
     Invoke-WebRequest "$nugetUrl/$nugetPackage/$latestVersion" -OutFile $zipPackagePath -UseBasicParsing;
     Expand-Archive -Path $zipPackagePath -DestinationPath $packagePath -Force;
-    Remove-Item -Path $zipPackagePath -Force;
+    if(Test-Path $zipPackagePath)
+    {
+        Remove-Item -Path $zipPackagePath -Force;
+    }
     Write-Host "[OK]" -ForegroundColor Green;
 }
 
