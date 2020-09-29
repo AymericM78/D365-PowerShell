@@ -43,7 +43,7 @@ else
     Expand-Archive -Path $zipPackagePath -DestinationPath $packagePath -Force;
     if(Test-Path $zipPackagePath)
     {
-        Remove-Item -Path $zipPackagePath -Force;
+        Remove-Item -Path $zipPackagePath -Force -ErrorAction SilentlyContinue;
     }
     Write-Host "[OK]" -ForegroundColor Green;
 }
