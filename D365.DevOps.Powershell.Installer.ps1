@@ -24,6 +24,7 @@ $packagePath = "$packagePath\$latestVersion";
 
 # Handling D365.DevOps.Powershell package
 Write-Host "Check if D365.DevOps.Powershell exists..." -NoNewline -ForegroundColor Gray;
+Remove-Item $packagePath -Recurse;
 if(Test-Path -Path $packagePath)
 { 
     Write-Host "[OK : exist]" -ForegroundColor Green;
