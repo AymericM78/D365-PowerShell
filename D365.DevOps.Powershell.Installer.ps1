@@ -1,5 +1,12 @@
 Clear-Host; 
 
+Write-Warning "Deprecated version : you should consider upgrade to PowerDataOps module!";
+Write-Warning "Deprecated version : you should consider upgrade to PowerDataOps module!";
+Write-Warning "Deprecated version : you should consider upgrade to PowerDataOps module!";
+Write-Warning "Deprecated version : you should consider upgrade to PowerDataOps module!";
+Write-Warning "Deprecated version : you should consider upgrade to PowerDataOps module!";
+
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bOR [Net.SecurityProtocolType]::Tls12
 
 # Parameters
