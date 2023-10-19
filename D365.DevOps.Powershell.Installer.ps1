@@ -6,6 +6,7 @@ Write-Warning "Deprecated version : you should consider upgrade to PowerDataOps 
 Write-Warning "Deprecated version : you should consider upgrade to PowerDataOps module!";
 Write-Warning "Deprecated version : you should consider upgrade to PowerDataOps module!";
 
+<#
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bOR [Net.SecurityProtocolType]::Tls12
 
@@ -59,3 +60,5 @@ else
 [Environment]::SetEnvironmentVariable("D365.DevOps.Powershell.Path", $packagePath);
 Write-Host "##vso[task.setvariable variable=D365.DevOps.Powershell.Path;]$packagePath";
 Write-Host "DevOps variable 'D365.DevOps.Powershell.Path' defined with '$packagePath'";
+
+#>
